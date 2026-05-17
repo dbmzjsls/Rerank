@@ -19,12 +19,18 @@ class Config:
     top_n: int = 2
 
     # LLM 配置
-    llm_model: str= "glm-5"
-    llm_eval: str = "qwen3.6-plus"
+    llm_model: str= "qwen3.6-plus"
+    llm_eval: str = "qwen-flash"
     DASHSCOPE_BASE_URL: str = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-    llm_temperature: float = 0.2
+    llm_temperature: float = 0 # 生成时也应该温度=0
     llm_max_tokens: int = 2000
 
+    # 实验配置
+    EXPERIMENT_RETRIEVER_K: int = 10  # 检索候选数
+    EXPERIMENT_TOP_N: int = 2  # Rerank 后保留数
+    EXPERIMENT_MULTIQUERY_N: int = 3  # MultiQuery 变体数
+    EVAL_LLM_MODEL: str = "glm-4-flash"  # RAGAS 评判模型
+    EVAL_LLM_TEMPERATURE: float = 0.0  # 评判时温度=0 保证一致性
     @staticmethod
     def get_api_key():
         return os.getenv("DASHSCOPE_API_KEY")

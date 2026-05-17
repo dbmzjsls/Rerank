@@ -62,6 +62,13 @@ Rerank/
 │   ├── config.py       # 全局配置
 │   ├── bulid_db.py     # 构建向量数据库
 │   └── rag_chain.py    # RAG 检索链
+├── rag_eval/           # RAGAS 评测模块
+│   ├── evaluator.py    # 核心评估逻辑 (4项指标 + 消融实验)
+│   ├── eval.py         # CLI 评测入口 (支持 --mode/--modes 参数)
+│   ├── eval_main.py    # 简易评测入口
+│   ├── test_dataset.py # 手工编写的 12 条测试题参考，请根据需要手动编写自己的测试题
+│   └── generate_testset.py  # LLM 辅助生成测试题的工具脚本
+├── experiments/        # 评测结果输出 (JSON)
 ├── main.py
 └── pyproject.toml
 ```
@@ -71,13 +78,31 @@ Rerank/
 `src/config.py` 中可调整的参数：
 
 | 参数 | 默认值 | 说明 |
-|------|--------|------|
+|------|------|------|
 | `CHUNK_SIZE` | 500 | 文本分块大小 |
 | `CHUNK_OVERLAP` | 50 | 分块重叠字符数 |
 | `retriever_k` | 5 | 检索返回文档数 |
 | `top_n` | 2 | Rerank 后保留文档数 |
 | `llm_model` | qwen-plus | LLM 模型 |
-| `llm_temperature` | 0.2 | 生成温度 |
+| `llm_temperature` | 0 | 生成温度 |
+
+## RAGAS 评测
+
+使用 [RAGAS](https://docs.ragas.io/) 对 RAG 检索质量进行 4 项指标评估:
+
+| 指标 | 说明 |
+|------|------|
+| Faithfulness | 回答忠实度，答案是否完全基于检索到的上下文 |
+| AnswerRelevancy | 答案相关性，回答与问题的匹配程度 |
+| ContextPrecision | 上下文精确度，检索结果中相关文档的排名 |
+| ContextRecall | 上下文召回率，是否检索到所有相关信息 |
+
+**运行消融实验**（对比多种检索模式）:
+```bash
+uv run python -m rag_eval.eval_main
+```
+
+支持的检索模式: `vector` / `ensemble` / `rerank` / `multiquery`，结果保存至 `experiments/` 目录。
 
 ## 重建向量数据库
 
